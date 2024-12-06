@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/enter.css' %}">
+<!-- staff_enter_results.html -->
+<h1>Enter Student Marks</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
+</form>
+{% endblock %}
