@@ -9,8 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
 
-
-<style>
+    <style>
         .bdy {
             font-family: Arial, sans-serif;
             background-color: rgb(243, 228, 186);
@@ -52,7 +51,6 @@
             cursor: pointer;
             text-decoration: none;
             font-size: 16px;
-            
         }
 
         .btn-green {
@@ -68,17 +66,27 @@
 </head>
 <br><br>
 <body class="bdy">
-    <div class="containers" >
-        <div class="circle">
-            <img src="{{ application.photo.url }}" alt="Profile picture">
-        </div>
-        <h4>Welcome: {{ application.name }}</h4>
-        <p>Course: {{ application.course }} {{ application.level }} &nbsp;&nbsp;&nbsp; YOA: {{ application.year_of_admission }}</p>
-        <div class="buttons">
-            <a href="#" class="btnn btn-green">Personal Information</a>
-            <a href="{% url 'finance' %}" class="btnn btn-orange">Finance</a>
-            <a href="{% url 'student_view_results' %}" class="btnn btn-blue">Academics</a>
-        </div>
+    <div class="containers">
+        {% if student %}
+            {% if student.profile_pic %}
+                <div class="circle">
+                    <img src="{{ student.profile_pic.url }}" alt="Profile picture">
+                </div>
+            {% else %}
+                <div class="circle">
+                    <img src="{% static 'default_profile_pic.jpg' %}" alt="Default profile picture">
+                </div>
+            {% endif %}
+            <h4>Welcome: {{ student.full_name }}</h4>
+            <p>Course: {{ student.course }} &nbsp;&nbsp;&nbsp; YOA: {{ student.yoa }}</p>
+            <div class="buttons">
+                <a href="#" class="btnn btn-green">Personal Information</a>
+                <a href="{% url 'finance' %}" class="btnn btn-orange">Finance</a>
+                <a href="{% url 'student_view_results' %}" class="btnn btn-blue">Academics</a>
+            </div>
+        {% else %}
+            <p>No student data found for the current user.</p>
+        {% endif %}
     </div>
     <br><br>
 </body>

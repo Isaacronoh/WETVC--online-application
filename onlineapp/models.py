@@ -101,15 +101,16 @@ class Staff(models.Model):
 
 
 # student registration
-
 class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=100)
-    adm_number = models.CharField(max_length=20, unique=True)
-    id_number = models.CharField(max_length=20, unique=True)
+    adm_number = models.CharField(max_length=20, unique=True, verbose_name="Admission Number")
+    yoa = models.IntegerField(verbose_name="Year of Admission")
+    id_number = models.IntegerField(unique=True)
+    course = models.CharField(max_length=100)
+    profile_pic = models.ImageField(upload_to="profile_pics/", blank=True)
 
     def __str__(self):
-        return self.full_name
+        return self.adm_number
 
 # finance model
 

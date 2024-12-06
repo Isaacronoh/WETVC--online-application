@@ -75,8 +75,20 @@ def studentlogin(request):
 def courses(request):
     return render(request, 'courses.html')
 
-def studentdashboard(request):
-    return render(request, 'student_dashboard.html')
+def dashboard(request):
+    # Ensure that the user is authenticated before fetching the student data
+    if request.user.is_authenticated:
+        try:
+            student = Student.objects.get(adm_number=request.user.username)  # Assuming the admission number is used as the username
+            context = {'student': student}
+        except Student.DoesNotExist:
+            student = None
+            context = {'student': student}
+        
+        return render(request, 'student_dashboard.html', context)
+    else:
+        # Redirect to login page if the user is not authenticated
+        return redirect('login')
 
 def staffdashboard(request):
     return render(request, 'staffdashboard.html')
@@ -126,32 +138,38 @@ def search(request):
 
 
 # register new student to login
-
 def studentregistration(request):
-    if request.method == 'POST':
-        full_name = request.POST.get('full_name')
-        adm_number = request.POST.get('adm_number')
-        id_number = request.POST.get('id_number')
+  if request.method == 'POST':
+    full_name = request.POST.get('full_name')
+    adm_number = request.POST.get('adm_number')
+    id_number = request.POST.get('id_number')  # Access id_number from POST data
+    course = request.POST.get('course')
+    yoa = request.POST.get('yoa')
+    profile_pic = request.FILES.get('profile_pic') 
 
-        # Create the User
-        user = User.objects.create_user(
-            username=adm_number, 
-            password=id_number, 
-            first_name=full_name
-        )
-        user.save()
+    # Create the User
+    user = User.objects.create_user(
+      username=adm_number,
+      password=id_number,
+      first_name=full_name
+    )
+    user.save()
 
-        # Create the Student record
-        student = Student.objects.create(
-            user=user,
-            full_name=full_name,
-            adm_number=adm_number,
-            id_number=id_number
-        )
-        student.save()
-        
-        return redirect('studentlogin') 
-    return render(request, 'studentregistration.html')
+    # Create the Student record (removed unnecessary id_number argument)
+    student = Student.objects.create(
+      full_name=full_name,
+      adm_number=adm_number,
+      id_number= id_number,
+      course=course,
+      yoa=yoa,
+      profile_pic=profile_pic  # Save uploaded file
+    )
+    student.save()
+    
+    return redirect('studentlogin')
+  
+  return render(request, 'studentregistration.html')
+
 
 # staff registartion
 

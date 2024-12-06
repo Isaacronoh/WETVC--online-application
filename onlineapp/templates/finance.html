@@ -13,7 +13,7 @@
 <br>
 <body>
     <div class="finance-container">
-        <p class="p1">Financial statement for: {{ application.name }}</p>
+        <p class="p1">Financial statement for: {{ request.user.first_name }}</p>
         <table class="finance-table">
             <tr>
                 <th>Total Billed</th>
@@ -34,27 +34,6 @@
         </div>
     </div>
     
-    <h3>Payment History</h3>
-    {% if payments %}
-        <table class="finance-table">
-            <thead>
-                <tr>
-                    <th>Amount</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for payment in payments %}
-                    <tr>
-                        <td>{{ payment.amount }}</td>
-                        <td>{{ payment.date }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>No payments made yet.</p>
-    {% endif %}
     <br>
 </body>
 </html>

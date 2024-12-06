@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'wajirtvc.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'wajirtvc',
+        'NAME': 'wajirtvc1',
         'USER': 'root',
         'PASSWORD':'',
         'HOST': 'localhost',
