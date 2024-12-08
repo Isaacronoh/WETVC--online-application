@@ -23,7 +23,7 @@
                             Staff Login
                             <img src="{% static 'images/t1.png' %}" alt="Teacher Icon" class="ms-2" style="width: 40px; height: 40px;">
                         </h2>
-                        <form action="{% url 'staffdashboard' %}" method="post">
+                        <form action="{% url 'stafflogin' %}" method="post">
                             {% csrf_token %}
                             <!-- Username Input -->
                             <div class="mb-3">

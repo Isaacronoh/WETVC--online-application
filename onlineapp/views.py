@@ -8,8 +8,9 @@ from rest_framework import viewsets
 from django.db.models import Q,Sum
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.decorators import login_required
 # trial import 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from .forms import ResultForm,ApplicationForm 
 from django.http import HttpResponse
 
@@ -67,6 +68,18 @@ def about_us(request):
     return render(request, 'about_us.html')
 
 def stafflogin(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None and hasattr(user, 'staff'):
+            login(request, user)
+            return redirect('staffdashboard')  # Redirect to the staff dashboard
+        else:
+            messages.error(request, "Invalid credentials or you are not a staff member.")
+            return render(request, 'stafflogin.html')
+
     return render(request, 'stafflogin.html')
 
 def studentlogin(request):
@@ -90,8 +103,18 @@ def dashboard(request):
         # Redirect to login page if the user is not authenticated
         return redirect('login')
 
+@login_required
 def staffdashboard(request):
-    return render(request, 'staffdashboard.html')
+    try:
+        staff = Staff.objects.get(user=request.user)
+    except Staff.DoesNotExist:
+        staff = None
+    
+    context = {
+        'staff': staff,
+    }
+    return render(request, 'staffdashboard.html', context)
+
 
     
     #home
@@ -126,16 +149,12 @@ class ApplicationView(viewsets.ModelViewSet):
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
 
-
-
 def search(request):
     query= request.GET.get('search')
     if query:
         courses = Course.objects.filter(Q(course_name__icontains=query) | Q(code__icontains = query))
         return render(request, 'search.html',{'courses' : courses})
     return render(request, 'courses.html')
-
-
 
 # register new student to login
 def studentregistration(request):
@@ -181,20 +200,17 @@ def staffregistration(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-        # Validate unique username
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already exists.")
             return render(request, 'staffregistration.html')
 
-        # Create new user
-        user = User.objects.create(
+        user = User.objects.create_user(
             username=username,
             first_name=first_name,
             last_name=last_name,
-            password=make_password(password)
+            password=password
         )
         
-        # Create Staff record
         Staff.objects.create(
             user=user,
             first_name=first_name,
@@ -206,6 +222,7 @@ def staffregistration(request):
         return redirect('stafflogin')
 
     return render(request, 'staffregistration.html')
+
 
 
 # login successfuly try
@@ -250,23 +267,25 @@ def finance(request):
 
 # academics section
 
+@login_required
 def staff_enter_results(request):
-    if not request.user.is_staff:
-        return redirect('studentlogin')  # Redirect to student dashboard if not staff
+    if not hasattr(request.user, 'staff'):
+        return redirect('stafflogin')
 
     if request.method == 'POST':
         form = ResultForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('staff_dashboar')  # Redirect back after saving
+            return redirect('staffdashboard')
     else:
         form = ResultForm()
 
     return render(request, 'staff_enter_results.html', {'form': form})
 
+@login_required
 def staff_edit_results(request, result_id):
-    if not request.user.is_staff:
-        return redirect('staff_enter_results')
+    if not hasattr(request.user, 'staff'):
+        return redirect('stafflogin')
 
     result = get_object_or_404(Result, id=result_id)
 
@@ -274,11 +293,15 @@ def staff_edit_results(request, result_id):
         form = ResultForm(request.POST, instance=result)
         if form.is_valid():
             form.save()
-            return redirect('staff_edit_results')
+            return redirect('staffdashboard')
     else:
         form = ResultForm(instance=result)
 
     return render(request, 'staff_edit_results.html', {'form': form, 'result': result})
+
+def logout(request):
+    
+    return redirect('home')
 
 def student_view_results(request):
     if not request.user.is_authenticated:
@@ -324,3 +347,17 @@ def delete_application(request, pk):
         application.delete()
         return redirect('application_list')  # Redirect to the list view after deletion
     return render(request, 'delete_application.html', {'application': application})
+
+def staff_personal_info(request):
+    return render(request, 'staff_personal_info.html')
+
+def staff_view_results(request):
+    return render(request, 'staff_view_results.html')
+
+def staff_view_results(request):
+   
+    subjects = []
+    results = [
+       
+    ]
+    return render(request, 'staff_view_results.html', {'subjects': subjects, 'results': results})

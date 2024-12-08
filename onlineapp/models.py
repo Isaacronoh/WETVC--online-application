@@ -33,7 +33,6 @@ class Card1(models.Model):
     def __str__(self):
         return self.tittle1
     
-
 class Card2(models.Model):
     tittle2 = models.CharField(max_length=50)
     description2 = models.CharField(max_length=250)
@@ -41,7 +40,6 @@ class Card2(models.Model):
     def __str__(self):
         return self.tittle2
     
-
 class Card3(models.Model):
     tittle3 = models.CharField(max_length=50)
     description3 = models.CharField(max_length=250)
@@ -86,8 +84,6 @@ class Course(models.Model):
     def __str__(self):
         return self.course_name
 
-
-# staff registration model.
 
 class Staff(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

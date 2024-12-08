@@ -32,8 +32,8 @@
                     <li class="nav-item"><a class="nav-link fs-5" href="{% url 'studentlogin' %}">Student Portal</a></li>
                     <li class="nav-item"><a class="nav-link fs-5" href="{% url 'stafflogin' %}">Staff Portal</a></li>
                 </ul>
-                <form class="d-flex ms-3" role="search">
-                    <input class="form-control me-2" type="search" aria-label="Search">
+                <form class="d-flex ms-3" role="search" method="get" action="/search/">
+                    <input class="form-control me-2" type="search" aria-label="Search" name="search">
                     <button class="btn btn-light" type="submit">Search</button>
                 </form>
             </div>
@@ -44,6 +44,7 @@
 
     {% endblock %}
 
+    
     <!-- Footer -->
     <footer class="bg-primary text-white py-4">
         <div class="container text-center">
